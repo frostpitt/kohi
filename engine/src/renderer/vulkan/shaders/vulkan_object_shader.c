@@ -168,8 +168,8 @@ void vulkan_object_shader_update_global_state(vulkan_context* context, struct vu
     VkCommandBuffer command_buffer = context->graphics_command_buffers[image_index].handle;
     VkDescriptorSet global_descriptor = shader->global_descriptor_sets[image_index];
 
-    static b8 updated = false;
-    if (!updated) {
+    static b8 updated[3] = {false, false, false};
+    if (!updated[image_index]) {
         // Configure the descriptors for the given index.
         u32 range = sizeof(global_uniform_object);
         u64 offset = sizeof(global_uniform_object) * image_index;
@@ -192,7 +192,7 @@ void vulkan_object_shader_update_global_state(vulkan_context* context, struct vu
         descriptor_write.pBufferInfo = &bufferInfo;
 
         vkUpdateDescriptorSets(context->device.logical_device, 1, &descriptor_write, 0, 0);
-        updated = true;
+        updated[image_index] = true;
     }
 
     // Bind the global descriptor set to be updated.
